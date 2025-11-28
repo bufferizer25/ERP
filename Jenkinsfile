@@ -1,4 +1,3 @@
-
 pipeline {
     agent any
 
@@ -11,7 +10,7 @@ pipeline {
         stage('Clone') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/bufferizer25/ERP'
+                url: 'https://github.com/<your-username>/<your-repo>.git'
             }
         }
 
@@ -62,3 +61,4 @@ pipeline {
         }
     }
 }
+
