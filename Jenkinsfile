@@ -19,7 +19,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('batch14-cicd') {
-                    sh 'npm install'
+                    bat 'npm install'
                 }
             }
         }
@@ -27,7 +27,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 dir('batch14-cicd') {
-                    sh 'npm test'
+                    bat 'npm test'
                 }
             }
         }
@@ -35,29 +35,29 @@ pipeline {
         stage('Build App') {
             steps {
                 dir('batch14-cicd') {
-                    sh 'npm run build'
+                    bat 'npm run build'
                 }
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME ./batch14-cicd'
+                bat 'docker build -t %IMAGE_NAME% ./batch14-cicd'
             }
         }
 
         stage('Docker Login') {
             steps {
-                sh """
-                   echo $GITHUB_TOKEN | docker login $REGISTRY \
-                   -u ${env.GITHUB_REPO_OWNER} --password-stdin
+                bat """
+                    echo %GITHUB_TOKEN% | docker login %REGISTRY% ^
+                    -u %GITHUB_REPO_OWNER% --password-stdin
                 """
             }
         }
 
         stage('Push Image') {
             steps {
-                sh 'docker push $IMAGE_NAME'
+                bat 'docker push %IMAGE_NAME%'
             }
         }
     }
