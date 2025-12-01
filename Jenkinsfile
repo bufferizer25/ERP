@@ -3,8 +3,10 @@ pipeline {
 
     environment {
         REGISTRY = "ghcr.io"
-        IMAGE_NAME = "${env.REGISTRY}/${env.GITHUB_REPO_OWNER}/${env.GITHUB_REPO_NAME}:latest"
-        GITHUB_TOKEN = credentials('ghcr_token')   // Jenkins credential (secret text)
+        REPO_OWNER = "bufferizer25"
+        REPO_NAME = "ERP"
+        IMAGE_NAME = "ghcr.io/${REPO_OWNER}/${REPO_NAME}:latest"
+        GITHUB_TOKEN = credentials('ghcr_token')
     }
 
     stages {
@@ -43,15 +45,15 @@ pipeline {
         stage('Docker Login') {
             steps {
                 sh """
-                   echo $GITHUB_TOKEN | docker login $REGISTRY \
-                   -u ${env.GITHUB_REPO_OWNER} --password-stdin
+                    echo $GITHUB_TOKEN | docker login $REGISTRY \
+                    -u ${REPO_OWNER} --password-stdin
                 """
             }
         }
 
         stage('Push Image') {
             steps {
-                sh 'docker push $IMAGE_NAME'
+                sh "docker push $IMAGE_NAME"
             }
         }
     }
