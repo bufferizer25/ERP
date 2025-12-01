@@ -19,7 +19,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 dir('batch14-cicd') {
-                    bat 'npm install'
+                    bat 'npm install --legacy-peer-deps'
                 }
             }
         }
