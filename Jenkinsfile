@@ -3,9 +3,7 @@ pipeline {
 
     environment {
         REGISTRY = "ghcr.io"
-        REPO_OWNER = "bufferizer25"
-        REPO_NAME = "ERP"
-        IMAGE_NAME = "ghcr.io/${REPO_OWNER}/${REPO_NAME}:latest"
+        IMAGE_NAME = "${env.REGISTRY}/${env.GITHUB_REPO_OWNER}/${env.GITHUB_REPO_NAME}:latest"
         GITHUB_TOKEN = credentials('ghcr_token')
     }
 
@@ -20,47 +18,53 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                bat 'npm install'
+                dir('batch14-cicd') {
+                    sh 'npm install'
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat 'npm test'
+                dir('batch14-cicd') {
+                    sh 'npm test'
+                }
             }
         }
 
         stage('Build App') {
             steps {
-                bat 'npm run build'
+                dir('batch14-cicd') {
+                    sh 'npm run build'
+                }
             }
         }
 
         stage('Docker Build') {
             steps {
-                bat "docker build -t %IMAGE_NAME% ."
+                sh 'docker build -t $IMAGE_NAME ./batch14-cicd'
             }
         }
 
         stage('Docker Login') {
             steps {
-                bat """
-                echo %GITHUB_TOKEN% | docker login %REGISTRY% ^
-                -u %REPO_OWNER% --password-stdin
+                sh """
+                   echo $GITHUB_TOKEN | docker login $REGISTRY \
+                   -u ${env.GITHUB_REPO_OWNER} --password-stdin
                 """
             }
         }
 
         stage('Push Image') {
             steps {
-                bat "docker push %IMAGE_NAME%"
+                sh 'docker push $IMAGE_NAME'
             }
         }
     }
 
     post {
         success {
-            echo "🎉 Deployment Successful!"
+            echo "🎉 Deployment Successful! Image pushed: $IMAGE_NAME"
         }
         failure {
             echo "❌ Pipeline failed!"
