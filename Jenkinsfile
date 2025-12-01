@@ -20,47 +20,47 @@ pipeline {
 
         stage('Install Dependencies') {
             steps {
-                sh 'npm ci'
+                bat 'npm ci'
             }
         }
 
         stage('Run Tests') {
             steps {
-                sh 'npm test'
+                bat 'npm test'
             }
         }
 
         stage('Build App') {
             steps {
-                sh 'npm run build'
+                bat 'npm run build'
             }
         }
 
         stage('Docker Build') {
             steps {
-                sh 'docker build -t $IMAGE_NAME .'
+                bat "docker build -t %IMAGE_NAME% ."
             }
         }
 
         stage('Docker Login') {
             steps {
-                sh """
-                    echo $GITHUB_TOKEN | docker login $REGISTRY \
-                    -u ${REPO_OWNER} --password-stdin
+                bat """
+                echo %GITHUB_TOKEN% | docker login %REGISTRY% ^
+                -u %REPO_OWNER% --password-stdin
                 """
             }
         }
 
         stage('Push Image') {
             steps {
-                sh "docker push $IMAGE_NAME"
+                bat "docker push %IMAGE_NAME%"
             }
         }
     }
 
     post {
         success {
-            echo "🎉 Deployment Successful! Image pushed: $IMAGE_NAME"
+            echo "🎉 Deployment Successful!"
         }
         failure {
             echo "❌ Pipeline failed!"
