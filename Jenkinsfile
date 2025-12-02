@@ -6,10 +6,11 @@ pipeline {
     }
 
     stages {
+
         stage('Clone') {
             steps {
                 git branch: 'main',
-                url: 'https://github.com/bufferizer25/ERP'
+                    url: 'https://github.com/bufferizer25/ERP'
             }
         }
 
